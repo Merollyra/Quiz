@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
+<h1>Das Fachbereichsquiz</h1>
+
+<form id="form" onsubmit="submitForm();return false;" onreset="resetFunction()">
+    <div id="parent">
+	</div>
+  
+  <div>
+  
+  <input id="submit" type="submit" value="Ergebnis ansehen">
+  <input type="reset" value="Quiz wiederholen">
+ </div>
+  <br>
+</form>
+<div id='resultText'></div>
+<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV -->
+ <script>
+
+
+     const fachBereiche = [
+    	{"score": 0, "name": "Informatiker*in", "link": "https://confluence.fh-muenster.de/x/8JBgC", "color": "#ffd200", "longText": "Informatiker*innen entwerfen, entwickeln und analysieren die Software digitaler Systeme und verwenden dafür Algorithmen und Methoden unter anderem aus der Data Science und dem maschinellen Lernen. Diese digitalen Systeme sind essentielle Bestandteile für die Lösungen zentraler gesellschaftlicher Herausforderungen wie der Bewältigung der Klimakrise, der Energiewende oder innovativer Mobilitätskonzepte und haben hohe Anforderungen an die Verfügbarkeit, Resilienz und Sicherheit der angebotenen Dienste."},
+        {"score": 0, "name": "Elektrotechnik Ingenieur*in", "link": "https://confluence.fh-muenster.de/x/85BgC", "color": "#ffd200", "longText": "Elektrotechniker*innen entwickeln und optimieren elektrotechnische Produkte und Anlagen und nutzen dabei Erkenntnisse aus den Naturwissenschaften, der Informatik und der Mathematik. Diese Systeme sind essentielle Bestandteile für die Lösungen zentraler gesellschaftlicher Herausforderungen wie der Bewältigung der Klimakrise, der Energiewende oder innovativer Mobilitätskonzepte und haben hohe Anforderungen an die Verfügbarkeit, Resilienz und Sicherheit der angebotenen Dienste."},
+        {"score": 0, "name": "Chemieingenieur*in", "link": "https://confluence.fh-muenster.de/x/9ZBgC", "color": "#eb0041", "longText": "Ein Chemieingenieur*in beschäftigt sich mit der Anwendung von chemischen Prinzipien und Verfahren in industriellen Prozessen. Dies umfasst das Design, die Entwicklung und die Optimierung von Produktionsanlagen und Verfahren zur Herstellung von chemischen Produkten. Der Ingenieur*in arbeitet an der Auswahl von Rohstoffen, der Steuerung von Produktionsprozessen, der Sicherstellung von Qualität und Sicherheit, sowie der Lösung von technischen Herausforderungen im Zusammenhang mit chemischen Anlagen. Chemieingenieure*innen können in verschiedenen Branchen arbeiten, darunter die chemische Industrie, Pharmaunternehmen, Lebensmittelproduktion, Umweltschutz und erneuerbare Energien. Ihr Ziel ist es, effiziente und nachhaltige Prozesse zu entwickeln, die die Herstellung von Chemikalien und Materialien verbessern."},
+        {"score": 0, "name": "Maschinenbau Ingenieur*in", "link": "https://confluence.fh-muenster.de/x/95BgC", "color": "#878787", "longText": "Ein Maschinenbauingenieur*in konzipiert, analysiert und entwickelt mechanische Systeme und Geräte. Das Aufgabenspektrum umfasst die Konstruktion von Maschinen, Produktionsanlagen, Fahrzeugen und anderen mechanischen Systemen. Maschinenbauingenieure*innen sind verantwortlich für die Auswahl von Materialien, das Entwerfen von Bauteilen, die Durchführung von Tests und Analysen, sowie die Optimierung von Produkten und Produktionsprozessen. Sie arbeiten in verschiedenen Branchen, darunter Automobilindustrie, Luft- und Raumfahrt, Energieerzeugung, Medizintechnik und mehr. Ziel ist es, effiziente und innovative Lösungen zu schaffen, die den Bedürfnissen der Industrie und Gesellschaft gerecht werden."},
+        {"score": 0, "name": "Ingenieur*in für Energie-, Gebäude oder Umwelttechnik", "link": "https://confluence.fh-muenster.de/x/_pBgC", "color": "#01df01", "longText": "Ein Ingenieur*in für Energie-, Gebäude- und Umwelttechnik ist auf die Entwicklung nachhaltiger Technologien und Systeme spezialisiert, die den Energieverbrauch in Gebäuden optimieren und umweltfreundliche Praktiken fördern. Dazu gehören das Design von energieeffizienten Gebäuden, die Integration erneuerbarer Energiequellen, die Planung von Heizungs-, Lüftungs- und Klimaanlagen (HLK), sowie die Umsetzung von Umweltschutzmaßnahmen. Der Ingenieur*in arbeitet an Lösungen zur Reduzierung von Emissionen, verbesserten Energieeffizienzstandards und der Implementierung nachhaltiger Technologien in Gebäuden und Infrastrukturen. Ziel ist es, umweltfreundliche und energieeffiziente Lösungen zu schaffen, die die Auswirkungen auf die Umwelt minimieren und den Energieverbrauch optimieren."},
+        {"score": 0, "name": "Physikingenieur*in Lasertechnik", "link": "https://confluence.fh-muenster.de/x/-JBgC", "color": "#00b4e6", "longText": "Lasertechnik-Ingenieur*innen sind auf die Entwicklung, Anwendung und Optimierung von Laser- und Lichttechnologien spezialisiert. Dies umfasst die Konzeptionierung und Herstellung von Lasergeräten, die in verschiedenen Bereichen eingesetzt werden, von medizinischen Anwendungen über Materialbearbeitung bis hin zu Kommunikationssystemen. Sie sind verantwortlich für das Design von Laserquellen, die Auswahl geeigneter Optik und die Integration von Laseranwendungen in unterschiedliche Systeme. Zudem spielt die Forschung und Entwicklung neuer Laseranwendungen eine wichtige Rolle, um innovative Lösungen für unterschiedliche Industriezweige zu schaffen."},
+    	{"score": 0, "name": "Biomedizinische Technik", "link": "https://confluence.fh-muenster.de/x/-5BgC", "color": "#00b4e6", "longText": "Ein Ingenieur*in für Biomedizinische Technik ist darauf spezialisiert, technologische Lösungen für Anwendungen im medizinischen Bereich zu entwickeln. Dies umfasst die Konzeption, Gestaltung und Wartung von medizinischen Geräten und Systemen. Der Ingenieur*in integriert Prinzipien aus Elektronik, Informatik und Mechanik, um Instrumente wie medizinische Bildgebungssysteme, Patientenüberwachungsgeräte oder diagnostische Ausrüstung zu entwerfen. Zudem spielt die Entwicklung von Prothesen, medizinischen Sensoren und anderen biomedizinischen Technologien eine wichtige Rolle. Das Ziel ist, die Gesundheitsversorgung zu verbessern, die Patientenpflege effizienter zu gestalten und innovative Lösungen für medizinische Herausforderungen zu schaffen."},
+        {"score": 0, "name": "Wirtschaftsingenieur*in", "link": "https://confluence.fh-muenster.de/x/AZFgC", "color": "#ff821e", "longText": "Wirtschaftsingenieure*innen verbindnt ingenieurwissenschaftliche Kenntnisse mit betriebswirtschaftlichem Know-how. Sie sind darauf spezialisiert, technische Prozesse in Unternehmen zu optimieren und die Schnittstelle zwischen Technik und Wirtschaft zu managen. Das Aufgabenspektrum umfasst die Analyse und Verbesserung von Produktionsabläufen, Kostenmanagement, Projektmanagement, Supply Chain-Optimierung und die Implementierung von Technologien in betriebswirtschaftliche Prozesse. Wirtschaftsingenieure*innen arbeiten in verschiedenen Industrien und tragen dazu bei, effiziente und wirtschaftliche Lösungen für technische Herausforderungen zu entwickeln. Ihr Ziel ist es, die Rentabilität und Wettbewerbsfähigkeit von Unternehmen zu stärken."}
+    ];
+    const questions = [
+    	{
+        	"questionText": "Wenn du eine Zeitmaschine hättest, zu welchem der folgenden Ereignisse in der Vergangenheit würdest du reisen?",
+        	"answers": [
+            {
+            	"answerText": "Zur Vorstellung des ersten Computers",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Zu dem Zeitpunkt als die erste Nachricht über einen Morseapparat verschickt wurde",
+            	"fachBereich": 1
+        	},{
+            	"answerText": "Zur Inbetriebnahme der ersten Dampfmaschine",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Zur Inbetriebnahme des ersten Lasers",
+            	"fachBereich": 5
+        	},{
+            	"answerText": "Zur Inbetriebnahme des Ammoniakreaktors der Haber-Bosch-Synthese",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Zu einer Operation des französische Chirurgen Ambroise Paré, der ein Pionier der Prothetik war",
+            	"fachBereich": 6
+        	},{
+            	"answerText": "Zur Einführung der Fließbandfertigung bei Henry Ford",
+            	"fachBereich": 7
+        	},{
+            	"answerText": "Zur Inbetriebnahme der ersten Fußbodenheizung",
+            	"fachBereich": 5
+        	}] 
+        },
+{
+        	"questionText": "Wenn du ein Märchen für Ingenieure schreiben müsstest, wie würde die Geschichte lauten und welche technischen Herausforderungen müssten die Helden überwinden?",
+        	"answers": [
+            {
+            	"answerText": "Das Nanomärchen: Die Reise zu den Wundermaterialien",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Die Erfindung der Traummaschine",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Der glitzernde Lichtstrahl: Das Märchen der Lasermeister",
+            	"fachBereich": 5
+        	},{
+            	"answerText": "Die Wächter des Grüns und ihre behaglichen Behausungen",
+            	"fachBereich": 6
+        	},{
+            	"answerText": "Die Schmiede des Lebens",
+            	"fachBereich": 4
+        	},{
+            	"answerText": "Die Balance des Erfolgs",
+            	"fachBereich": 7
+        	},{
+            	"answerText": "Die Codekönige und ihre Digitale Welt",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Die Zauberer des Stroms",
+            	"fachBereich": 1
+        	}] 
+        },
+{
+        	"questionText": "Wenn du eine Haushaltsmaschine wärst, welche wärst du?",
+        	"answers": [
+            {
+            	"answerText": "Präzisionskochroboter",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Smart-Home-Steuerungszentrale",
+            	"fachBereich": 1
+        	},{
+            	"answerText": "Künstliche-Intelligenz-Kochassistent",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Hochleistungs-Küchenmaschine",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Hochleistungs Heizung",
+            	"fachBereich": 6
+        	},{
+            	"answerText": "OptimiKüche - Effiziente Küchenmanagementlösung",
+            	"fachBereich": 7
+        	},{
+            	"answerText": "Gesundheitspflegeassistent",
+            	"fachBereich": 4
+        	},{
+            	"answerText": "Laserpräzise Schneidemaschine",
+            	"fachBereich": 5
+        	}] 
+        },
+{
+        	"questionText": "Stell dir vor, du bist auf einer einsamen Insel gestrandet und hast nur Ingenieurwerkzeuge zur Verfügung. Wie würdest du dein Überleben sicherstellen?",
+        	"answers": [
+            {
+            	"answerText": "Aus Pflanzen der Insel Stoffe extrahieren, die für die Wasseraufbereitung und medizinische Zwecke nützlich sind. Außerdem Brennstoff und Nahrung sammeln",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Bau von Solarkollektoren aus improvisierten Materialien",
+            	"fachBereich": 1
+        	},{
+            	"answerText": "Bau eines primitiven Kommunikationssystems (Funksender)",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Bau einer Windturbine",
+            	"fachBereich": 6
+        	},{
+            	"answerText": "Erstellung eines effizienten Ressourcenplans",
+            	"fachBereich": 7
+        	},{
+            	"answerText": "Bau von Werkzeugen",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Identifikation essbarer Pflanzen",
+            	"fachBereich": 4
+        	},{
+            	"answerText": "Bau eines Laserkommunikationssystems",
+            	"fachBereich": 5
+        	}] 
+        },
+{
+        	"questionText": "Bei welchem Arbeitsplatz würdest du dich am wohlsten fühlen?",
+        	"answers": [
+            {
+            	"answerText": "Der Schreibtisch ist mit Miniaturmodellen von HVAC-Systemen geschmückt und es gibt eine Fernbedienung, um das Büroklima zu optimieren.",
+            	"fachBereich": 6
+        	},{
+            	"answerText": "Der Schreibtischstuhl ist eigentlich ein Pilotensitz und ich trage immer eine Schutzbrille.",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Umgeben von Röhren, Flaschen mit mysteriösen Flüssigkeiten und bunten Indikatoren. Ich trage auch eine Schutzbrille beim Kaffeekochen.",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Der Schreibtisch ist voller bunter Post-its mit komplizierten Formeln. Auf dem Computerbildschirm laufen Excel-Tabellen wie ein Actionfilm ab.",
+            	"fachBereich": 7
+        	},{
+            	"answerText": "Auf dem Bildschirm flimmert eine Matrix aus Code, und ich trage eine Tastatur als Krone. Statt eines Kugelschreibers liegt ein Stylus bereit, um in der digitalen Welt zu schreiben.",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Der Stuhl ist mit leitfähigem Stoff bezogen, und ich trage einen Hut mit blinkenden LEDs. Auf dem Tisch liegt ein Elektromagnet, um Dinge magisch heranzuziehen, und eine Fernbedienung, um das Licht im Raum zu dimmen – alles elektronisch, natürlich.",
+            	"fachBereich": 1
+        	},{
+            	"answerText": "Der Schreibtisch ist gesäumt von Laserstrahlen, die Kaffee aufwärmen, und überall liegen Prismen, die das Licht in spektrale Regenbögen brechen.",
+            	"fachBereich": 5
+        	},{
+            	"answerText": "Der Schreibtisch ist mit künstlichen Organmodellen geschmückt und im Hintergrund laufen biomedizinische Geräte im Takt einer Herzfrequenz.",
+            	"fachBereich": 4
+        	}] 
+        },
+{
+        	"questionText": "Was wäre dein heimliches Hobby?",
+        	"answers": [
+            {
+            	"answerText": "Chemie-Magie-Show-Performer",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Geheime Mission gegen Plastik-Monster",
+            	"fachBereich": [6,2]
+        	},{
+            	"answerText": "Rennwagen-Bettbauer",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Virtueller Weltreisender",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Tanzender Lichtschalter-Choreograf",
+            	"fachBereich": 1
+        	},{
+            	"answerText": "Laser-Maler",
+            	"fachBereich": 5
+        	},{
+            	"answerText": "Cyborg-Cosplayer",
+            	"fachBereich": 4
+        	},{
+            	"answerText": "Science-Slammer",
+            	"fachBereich": 7
+        	}] 
+        },
+{
+        	"questionText": "Welche erneuerbare Energie ist für dich die bedeutendste?",
+        	"answers": [
+            {
+            	"answerText": "Wasserkraft",
+            	"fachBereich": [3,7]
+        	},{
+            	"answerText": "Solarenergie",
+            	"fachBereich": [0,1,2]
+        	},{
+            	"answerText": "Windkraft",
+            	"fachBereich": [3,6]
+            },{
+            	"answerText": "Biomasse",
+            	"fachBereich": [2,4]
+            },{
+            	"answerText": "Geothermie",
+            	"fachBereich": [5,6]
+            },{
+            	"answerText": "Wasserstoff",
+            	"fachBereich": [2,6,7]
+            }] 
+        },
+{
+        	"questionText": "Welche Herausforderung möchtest du lösen?",
+        	"answers": [
+            {
+            	"answerText": "Mikroplastik in den Meeren verhindern",
+            	"fachBereich": 2
+        	},{
+            	"answerText": "Moderne Fahrzeugantriebe entwickeln",
+            	"fachBereich": 3
+        	},{
+            	"answerText": "Neue Heizkonzepte für alte Gebäude entwickeln",
+            	"fachBereich": 6
+        	},{
+            	"answerText": "Integration von neuen Technologien in die medizinische Praxis",
+            	"fachBereich": 4
+        	},{
+            	"answerText": "Integration von Ingenieur- und Geschäftsprozessen",
+            	"fachBereich": 7
+        	},{
+            	"answerText": "Erhöhung der Sicherheit von Informationssystemen, damit die Hacker keine Chance haben",
+            	"fachBereich": 0
+        	},{
+            	"answerText": "Entwicklung moderner Steuerungstechnik für effiziente Prozesse",
+            	"fachBereich": 1
+        	},{
+            	"answerText": "Weiterentwicklung der faseroptischen Kommunikation (Übertragung von Daten über Glasfasern)",
+            	"fachBereich": 5
+        	}] 
+        },  
+    ];
+    buildForm();
+    
+    function buildForm() {
+        let parent = document.querySelector("#parent");
+        questions.forEach((question, questionIndex) => {
+            var h2 = document.createElement("h2");
+            h2.textContent = question.questionText;
+            parent.appendChild(h2);
+            question.answers.forEach((answer, answerIndex) => {
+            
+            	var label = document.createElement('label');
+                label.classList.add('container');
+               	label.textContent = answer.answerText;
+            	parent.appendChild(label);
+                
+                var input = document.createElement('input');
+                input.type = "radio";
+                input.name = ""+questionIndex;
+                input.value = answer.fachBereich;
+                input.setAttribute("required","true");
+                label.appendChild(input);
+                
+                var span = document.createElement('span');
+                span.classList.add('checkmark');
+                label.appendChild(span);
+            });
+            var br = document.createElement("br");
+            parent.appendChild(br);
+        });
+    }
+    
+    function toFixedIfNecessary( value, dp ){
+  		return +parseFloat(value).toFixed( dp );
+	}
+
+   function submitForm() {
+   	resetFunction();
+    let parent = document.querySelector("#parent");
+    parent.setAttribute("hidden", "true");
+    let submit = document.querySelector("#submit");
+    submit.setAttribute("hidden", "true");
+    questions.forEach((question, questionIndex) => {
+    	var selectedValue = document.querySelector('input[name="' + questionIndex +'"]:checked').value;
+		    var myArray = JSON.parse("[" + selectedValue + "]");
+            myArray.forEach((value) => {
+            	fachBereiche[value].score += 1; 
+		    });
+    });
+    var values = [];
+    var labels = [];
+    var colors = [];
+    fachBereiche.forEach((fachBereich) => {
+    	if(fachBereich.score > 0) {
+           values.push(fachBereich.score);
+        } else {
+           values.push(null);
+        }
+        labels.push(fachBereich.name);
+        colors.push(fachBereich.color);
+    });
+    
+    var data = [{
+          values: values,
+          labels: labels,
+          marker: {
+    		colors: colors
+  		},
+          type: 'pie'
+        }];
+
+        var layout = {
+          height: 600,
+          width: 800
+        };
+        config = {
+            'showLink':false,
+            'displaylogo': false
+        }
+
+        Plotly.newPlot('myDiv', data, layout,  config);
+        
+        let highestScore = Math.max(...values);
+        let resultText = document.querySelector("#resultText");
+        highestFachBereiche = [];
+        fachBereiche.forEach((fachBereich) => {
+          if(fachBereich.score === highestScore) {
+               highestFachBereiche.push(fachBereich);
+           }
+        });
+        let counter = 0;
+        let spanVorher = document.createElement('span');
+        spanVorher.innerHTML = "Es scheint so, dass der Ingenieurtyp ";
+        resultText.appendChild(spanVorher);
+        while(counter < highestFachBereiche.length) {
+        	if(counter != 0) {
+          	let spanUnd = document.createElement('span');
+        		spanUnd.innerHTML = " und ";
+        		resultText.appendChild(spanUnd);
+          }
+        	var a = document.createElement('a');
+          a.href = highestFachBereiche[counter].link
+          a.innerHTML = highestFachBereiche[counter].name;
+          resultText.appendChild(a);
+          counter++;
+        }
+        let spanNachher = document.createElement('span');
+        if(counter > 1) {
+        	 spanNachher.innerHTML = " gut zu dir passt! Klicke auf den Ingineurtyp, der dich am meisten interessiert, um mehr darüber zu erfahren.";
+        } else {
+          spanNachher.innerHTML = " gut zu dir passt! Klicke auf den Ingineurtyp um mehr darüber zu erfahren.";
+        }
+        resultText.appendChild(spanNachher);
+        
+   }
+   
+   function resetFunction() {
+   Plotly.purge("myDiv");
+   	let parent = document.querySelector("#parent");
+    parent.removeAttribute("hidden");
+    let submit = document.querySelector("#submit");
+    submit.removeAttribute("hidden");
+    document.querySelector("#resultText").innerHTML = "";
+   	fachBereiche.forEach((fachBereich) => {
+    	fachBereich.score = 0;
+    });
+   }
+  </script>
+  <style>
+/* Customize the label (the container) */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark:after {
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+input[type=submit] {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+input[type=reset] {
+  background-color: #aa3604;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>
+</body>
+
+
+Gehe zu den Repository-Einstellungen und aktiviere GitHub Pages.
