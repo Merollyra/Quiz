@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 <body>
 <script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
 <h1>Welcher Ingenieurtyp bist du?</h1>
@@ -8,8 +12,14 @@
     <div id="parent">
 	</div>
   
-  <div>
-  
+    <form id="form" onsubmit="submitForm(); return false;">
+        <div id="parent"></div>
+        <input id="submit" type="submit" value="Antworten abschicken">
+    </form>
+    <button id="newWindowButton" style="display:none;" onclick="openResultsInNewWindow()">Ergebnisse in neuem Fenster anzeigen</button>
+    <div id="resultText"></div>
+    <div id="myDiv"></div>
+	  
   <input id="submit" type="submit" value="Ergebnis ansehen">
   <input type="reset" value="Quiz wiederholen">
  </div>
